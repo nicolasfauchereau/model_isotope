@@ -13,12 +13,14 @@ from math import exp
 from itertools import product
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 
 def C2K(T):
     return T + 273.16
 
 gs_l = [0.25,]
+#gs_l = np.linspace(0.069,0.35,100)
 leaf_width_l= [0.015,]
 d_source_H2O_l = [-5.17,]
 fract_through_stomata_l = [32,]
@@ -31,22 +33,25 @@ C_l = [5.55e4,]
 # #### Constants for calculations of $\Delta$ cellulose and $\Delta$ leaf
 C_O_fract_l = [27,]
 Dcel_Dom_l = [9,]
-prop_exc_l = [0.45,]
-prop_Xylem_l = [0.56,]
+prop_exc_l = np.linspace(0.25,0.65,100)
+# prop_exc_l = [0.45,]
+prop_Xylem_l = np.linspace(0.25,0.65,100)
+#prop_Xylem_l = [0.56,]
 
 inputs = pd.read_csv('../excel/inputs.csv', index_col = 0)
 
 ### ===========================================================================
-PAR = 925.
-
+PAR_l = [925.,]
+#PAR_l = np.linspace(800,1000,100)
 ### ===========================================================================
-### create the iterator defining the parameter space for the model 
 
 l = []
 
 for index in xrange(len(inputs)): 
 
-    parameter_space = product(gs_l,leaf_width_l,d_source_H2O_l,fract_through_stomata_l,fract_through_boundary_layer_l,eff_length_l,C_l,C_O_fract_l,Dcel_Dom_l,prop_exc_l,prop_Xylem_l)
+    ### ===========================================================================
+    ### create the iterator defining the parameter space for the model 
+    parameter_space = product(gs_l,leaf_width_l,d_source_H2O_l,fract_through_stomata_l,fract_through_boundary_layer_l,eff_length_l,C_l,C_O_fract_l,Dcel_Dom_l,prop_exc_l,prop_Xylem_l, PAR_l)
 
     rh, airtemp, pressure, windspeed = inputs.iloc[index,:]
 
@@ -55,7 +60,7 @@ for index in xrange(len(inputs)):
     ### ===========================================================================
     ### start the loop over the parameter space 
     for parameters in parameter_space: 
-        gs,leaf_width,d_source_H2O,fract_through_stomata,fract_through_boundary_layer,eff_length,C,C_O_fract,Dcel_Dom,prop_exc,prop_Xylem = parameters
+        gs,leaf_width,d_source_H2O,fract_through_stomata,fract_through_boundary_layer,eff_length,C,C_O_fract,Dcel_Dom,prop_exc,prop_Xylem, PAR = parameters
 
         # ### Energy balance calculations 
         rs = 1. / gs
@@ -138,7 +143,7 @@ for index in xrange(len(inputs)):
 
         dL = ((DL/1000)*(1+(d_source_H2O/1000))+(d_source_H2O/1000))*1000
 
-        # ### Calculating $\Delta$ cellulose and $\Delta$ leaf
+        ### Calculating $\Delta$ cellulose and $\Delta$ leaf
 
         D_sucrose = DL + C_O_fract
 
@@ -159,3 +164,33 @@ for index in xrange(len(inputs)):
     l.append(param_outputs)
 
 l = np.array(l)
+
+mean_l = l.mean(0)
+std_l = l.std(0)
+
+l_s = (l - mean_l) / std_l
+
+### ===========================================================================
+### load the OBSERVED delta 18O values 
+
+obs = pd.read_csv('../excel/observed_tree_rings.csv', index_col=0)
+
+f, ax = plt.subplots(figsize=(10,8))
+ax.plot(inputs.index, l, color='steelblue', lw=1.5)
+ax.set_title('Raw data')
+f.savefig('../figures/raw_modelled_delta18O.png', bbox_inches='tight', dpi=200)
+plt.close(f)
+
+f, ax = plt.subplots(figsize=(10,8))
+ax.plot(inputs.index, l_s, color='steelblue', lw=1.5)
+ax.plot(obs.index, obs['av'].values, color='r', lw=2)
+ax.set_title('normalized data')
+f.savefig('../figures/normalized_modelled_delta18O.png', bbox_inches='tight', dpi=200)
+plt.close(f)
+
+### ===========================================================================
+### calculate correlation coefficients 
+R_coeff = []
+
+for i in np.arange(l.shape[1]): 
+    R_coeff.append(np.corrcoef(l_s[:,i], obs['av'].values.flatten())[0,1])
