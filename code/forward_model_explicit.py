@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/python                                                                                  
 # -*- coding: utf-8 -*-
 # ==============================================================================
@@ -15,10 +14,11 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-
 def C2K(T):
     return T + 273.16
 
+### ===========================================================================
+### define the parameter space here 
 gs_l = [0.25,]
 #gs_l = np.linspace(0.069,0.35,100)
 leaf_width_l= [0.015,]
@@ -62,7 +62,8 @@ for index in xrange(len(inputs)):
     for parameters in parameter_space: 
         gs,leaf_width,d_source_H2O,fract_through_stomata,fract_through_boundary_layer,eff_length,C,C_O_fract,Dcel_Dom,prop_exc,prop_Xylem, PAR = parameters
 
-        # ### Energy balance calculations 
+        ### ===========================================================================
+        ### Energy balance calculations 
         rs = 1. / gs
 
         r_times_b = 3.8 * (leaf_width**0.25)*(windspeed**(-0.5))
@@ -77,7 +78,8 @@ for index in xrange(len(inputs)):
 
         Qabs = 0.5 * Qtot
 
-        # ### Calculating $\epsilon$
+        ### ===========================================================================
+        ### Calculating $\epsilon$
 
         lesstemp = airtemp - 1.
 
@@ -93,7 +95,8 @@ for index in xrange(len(inputs)):
 
         epsilon = (smbar*44012)/(29.2*(pressure))
 
-        # ### Calculating $\frac{EA}{EI}$
+        ### ===========================================================================
+        ### Calculating $\frac{EA}{EI}$
 
         ea = (rh / 100) * (6.13753 * exp(airtemp * ((18.564 - (airtemp/254.4)))/(airtemp +255.57)))
 
@@ -113,12 +116,14 @@ for index in xrange(len(inputs)):
 
         ea_ei = ea / ei
 
-        # ### Calculating transpiration
+        ### ===========================================================================
+        ### Calculating transpiration
 
         transpiration = (epsilon * rBH * Qabs / 44012. + D) \
         / (rs + rb + epsilon * rBH)
 
-        # ### Craig / Gordon parameters 
+        ### ===========================================================================
+        ### Craig & Gordon parameters 
 
         d_water_vapour = d_source_H2O + -1*(2.644-3.206*(1000/C2K(airtemp))+\
                                             1.534*(1000000/(C2K(airtemp)*C2K(airtemp))))
@@ -133,7 +138,8 @@ for index in xrange(len(inputs)):
 
         de = ek+e_star+((d_water_vapour-ek)*ea_ei)
 
-        # ### Estimating the Peclet effect 
+        ### ===========================================================================
+        ### Estimating the Peclet effect 
 
         D_Peclet = 0.000000119*(exp(-(637/(leaf_temp_K-137))))
 
@@ -143,6 +149,7 @@ for index in xrange(len(inputs)):
 
         dL = ((DL/1000)*(1+(d_source_H2O/1000))+(d_source_H2O/1000))*1000
 
+        ### ===========================================================================
         ### Calculating $\Delta$ cellulose and $\Delta$ leaf
 
         D_sucrose = DL + C_O_fract
@@ -155,7 +162,8 @@ for index in xrange(len(inputs)):
 
         d_leaf = ((D_leaf/1000)*(1+(d_source_H2O/1000))+(d_source_H2O/1000))*1000
 
-        # ### OUTPUT = $\Delta O_{18}$ in tree-rings cellulose
+        ### ===========================================================================
+        ### OUTPUT = $\Delta O_{18}$ in tree-rings cellulose
 
         OUTPUT = ((D_cellulose/1000)*(1+(d_source_H2O/1000))+(d_source_H2O/1000))*1000
 
@@ -175,6 +183,8 @@ l_s = (l - mean_l) / std_l
 
 obs = pd.read_csv('../excel/observed_tree_rings.csv', index_col=0)
 
+### ===========================================================================
+### plots 
 f, ax = plt.subplots(figsize=(10,8))
 ax.plot(inputs.index, l, color='steelblue', lw=1.5)
 ax.set_title('Raw data')
