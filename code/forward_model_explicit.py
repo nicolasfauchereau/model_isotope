@@ -33,16 +33,17 @@ C_l = [5.55e4,]
 # #### Constants for calculations of $\Delta$ cellulose and $\Delta$ leaf
 C_O_fract_l = [27,]
 Dcel_Dom_l = [9,]
-prop_exc_l = np.linspace(0.25,0.65,100)
-# prop_exc_l = [0.45,]
-prop_Xylem_l = np.linspace(0.25,0.65,100)
-#prop_Xylem_l = [0.56,]
+#prop_exc_l = np.linspace(0.25,0.65,100)
+prop_exc_l = [0.45,]
+#prop_Xylem_l = np.linspace(0.25,0.65,100)
+prop_Xylem_l = [0.56,]
 
+### ===========================================================================
 inputs = pd.read_csv('../excel/inputs.csv', index_col = 0)
 
 ### ===========================================================================
-PAR_l = [925.,]
-#PAR_l = np.linspace(800,1000,100)
+#PAR_l = [925.,]
+PAR_l = np.linspace(800,1000,100)
 ### ===========================================================================
 
 l = []
@@ -185,16 +186,19 @@ obs = pd.read_csv('../excel/observed_tree_rings.csv', index_col=0)
 
 ### ===========================================================================
 ### plots 
-f, ax = plt.subplots(figsize=(10,8))
-ax.plot(inputs.index, l, color='steelblue', lw=1.5)
+f, ax = plt.subplots(figsize=(10,6))
+ax.plot(inputs.index, l, color='r', lw=1.5)
 ax.set_title('Raw data')
 f.savefig('../figures/raw_modelled_delta18O.png', bbox_inches='tight', dpi=200)
 plt.close(f)
 
-f, ax = plt.subplots(figsize=(10,8))
-ax.plot(inputs.index, l_s, color='steelblue', lw=1.5)
-ax.plot(obs.index, obs['av'].values, color='r', lw=2)
-ax.set_title('normalized data')
+f, ax = plt.subplots(figsize=(10,6))
+ax.plot(inputs.index, l_s, color='coral', lw=1.5, label='model')
+ax.plot(obs.index, obs['av'].values, color='steelblue', lw=2, label='observations')
+ax.errorbar(obs.index, obs['av'].values, yerr=obs['std'].values, fmt='o', color='steelblue')
+ax.legend(loc=0)
+ax.set_title('normalized data:\n modelled and observed $\delta O_{18}$', fontsize=14)
+ax.text(2006,2.5,'R=%4.2f' % (np.corrcoef(l_s.flatten(),obs['av'].values)[0,1]))
 f.savefig('../figures/normalized_modelled_delta18O.png', bbox_inches='tight', dpi=200)
 plt.close(f)
 
