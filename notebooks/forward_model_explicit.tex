@@ -189,354 +189,273 @@
     
 
     
-    \section{Forward eco-physiological modelling of $\Delta O_{18}$ in tree
+    \section{Forward eco-physiological modelling of $\delta O_{18}$ in tree
 rings}
 
-    \paragraph{A small function to convert degrees Celsius to Kelvin}
+    \subsubsection{Import the libraries we will need}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}1}]:} \PY{k}{def} \PY{n+nf}{C2K}\PY{p}{(}\PY{n}{T}\PY{p}{)}\PY{p}{:}
-            \PY{l+s+sd}{"""}
-        \PY{l+s+sd}{    conversion celsius to Kelvin}
-        \PY{l+s+sd}{    """}
-            \PY{k}{return} \PY{n}{T} \PY{o}{+} \PY{l+m+mf}{273.16}
+{\color{incolor}In [{\color{incolor}21}]:} \PY{k+kn}{import} \PY{n+nn}{os}
+         \PY{k+kn}{from} \PY{n+nn}{math} \PY{k+kn}{import} \PY{n}{exp}
+         \PY{k+kn}{from} \PY{n+nn}{itertools} \PY{k+kn}{import} \PY{n}{product}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k+kn}{as} \PY{n+nn}{np}
+         \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k+kn}{as} \PY{n+nn}{pd}
+         \PY{k+kn}{from} \PY{n+nn}{matplotlib} \PY{k+kn}{import} \PY{n}{pyplot} \PY{k}{as} \PY{n}{plt}
 \end{Verbatim}
 
-    \subsubsection{fixed parameters}
-
-    \paragraph{Some things to play with ?}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}2}]:} \PY{n}{gs} \PY{o}{=} \PY{l+m+mf}{0.25} \PY{c}{\PYZsh{} ??? What is gs ? }
-\end{Verbatim}
+    \subsubsection{Define the path where to find the csv files (from your
+home directory)}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{leaf\PYZus{}width} \PY{o}{=}  \PY{l+m+mf}{0.015}
+{\color{incolor}In [{\color{incolor}22}]:} \PY{n}{dpath} \PY{o}{=} \PY{l+s}{'}\PY{l+s}{research/NIWA/paleo/model\PYZus{}isotope/excel}\PY{l+s}{'}
+         
+         \PY{n}{dpath} \PY{o}{=} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{environ}\PY{p}{[}\PY{l+s}{'}\PY{l+s}{HOME}\PY{l+s}{'}\PY{p}{]}\PY{p}{,} \PY{n}{dpath}\PY{p}{)}
 \end{Verbatim}
+
+    \subsubsection{Define the path where to save the figures (from your home
+directory)}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{PAR} \PY{o}{=} \PY{l+m+mf}{925.} 
+{\color{incolor}In [{\color{incolor}23}]:} \PY{n}{fpath} \PY{o}{=} \PY{l+s}{'}\PY{l+s}{research/NIWA/paleo/model\PYZus{}isotope/figures}\PY{l+s}{'}
+         
+         \PY{n}{fpath} \PY{o}{=} \PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{environ}\PY{p}{[}\PY{l+s}{'}\PY{l+s}{HOME}\PY{l+s}{'}\PY{p}{]}\PY{p}{,} \PY{n}{fpath}\PY{p}{)}
 \end{Verbatim}
 
-    \paragraph{Constants for the Craig / Gordon parameters}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{d\PYZus{}source\PYZus{}H2O} \PY{o}{=} \PY{o}{-}\PY{l+m+mf}{5.17}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{fract\PYZus{}through\PYZus{}stomata} \PY{o}{=} \PY{l+m+mi}{32}
-\end{Verbatim}
+    \subsubsection{Below is a small function to convert degrees Celsius to
+Kelvin}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{fract\PYZus{}through\PYZus{}boundary\PYZus{}layer} \PY{o}{=} \PY{l+m+mi}{28}
+{\color{incolor}In [{\color{incolor}24}]:} \PY{k}{def} \PY{n+nf}{C2K}\PY{p}{(}\PY{n}{T}\PY{p}{)}\PY{p}{:}
+             \PY{l+s+sd}{"""}
+         \PY{l+s+sd}{    conversion celsius to Kelvin}
+         \PY{l+s+sd}{    """}
+             \PY{k}{return} \PY{n}{T} \PY{o}{+} \PY{l+m+mf}{273.16}
 \end{Verbatim}
 
-    \paragraph{Constants related to the Peclet effect}
+    \subsubsection{Define the parameter space of the model}
 
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{eff\PYZus{}length} \PY{o}{=} \PY{l+m+mf}{0.0077}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{C} \PY{o}{=} \PY{l+m+mf}{55.5} \PY{o}{*} \PY{l+m+mf}{1000.} \PY{c}{\PYZsh{} ??? why that ?}
-\end{Verbatim}
-
-    \paragraph{Constants for calculations of $\Delta$ cellulose and $\Delta$
-leaf}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{C\PYZus{}O\PYZus{}fract} \PY{o}{=} \PY{l+m+mi}{27}
-\end{Verbatim}
+    \textbf{Each parameter entering the calculations of $\delta 18_{O}$ can
+be defined as :}\\\textgreater{} + \texttt{np.linspace(min, max, steps)}
+creates steps values between min (included) and max (not included)
+\textgreater{} + \texttt{{[}value,{]}} A real value (e.g.~0.015),
+brackets around and comma \textbf{are important} \textgreater{} +
+`{[}value1,value2,\ldots{}{]} A list of specific real values to test
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{Dcel\PYZus{}Dom} \PY{o}{=} \PY{l+m+mi}{9}
+{\color{incolor}In [{\color{incolor}29}]:} \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+         \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} define the parameter space here }
+         \PY{n}{gs\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.25}\PY{p}{,}\PY{p}{]}
+         \PY{c}{\PYZsh{}gs\PYZus{}l = np.linspace(0.069,0.35,100)}
+         \PY{n}{leaf\PYZus{}width\PYZus{}l}\PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.015}\PY{p}{,}\PY{p}{]}
+         \PY{n}{d\PYZus{}source\PYZus{}H2O\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{o}{-}\PY{l+m+mf}{5.17}\PY{p}{,}\PY{p}{]}
+         \PY{n}{fract\PYZus{}through\PYZus{}stomata\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{32}\PY{p}{,}\PY{p}{]}
+         \PY{n}{fract\PYZus{}through\PYZus{}boundary\PYZus{}layer\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{28}\PY{p}{,}\PY{p}{]}
+         \PY{c}{\PYZsh{} **eff\PYZus{}length** is the effective length at a minimum is double the average distance for a stoma to the central vein. For kauri, the avg distance is 0.0035m.  }
+         \PY{c}{\PYZsh{} Thus, the minimum for this variable is about 0.0077m.  Untested theory however suggests at least 2 orders of magnitude for the avg distance,}
+         \PY{c}{\PYZsh{} so 0.35m}
+         \PY{n}{eff\PYZus{}length\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.0077}\PY{p}{,}\PY{p}{]}
+         \PY{n}{C\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{5.55e4}\PY{p}{,}\PY{p}{]}
+         \PY{c}{\PYZsh{} \PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{} Constants for calculations of \PYZdl{}\PYZbs{}Delta\PYZdl{} cellulose and \PYZdl{}\PYZbs{}Delta\PYZdl{} leaf}
+         \PY{n}{C\PYZus{}O\PYZus{}fract\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{27}\PY{p}{,}\PY{p}{]}
+         \PY{n}{Dcel\PYZus{}Dom\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{9}\PY{p}{,}\PY{p}{]}
+         \PY{c}{\PYZsh{}prop\PYZus{}exc\PYZus{}l = np.linspace(0.25,0.65,100)}
+         \PY{n}{prop\PYZus{}exc\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.45}\PY{p}{,}\PY{p}{]}
+         \PY{c}{\PYZsh{}prop\PYZus{}Xylem\PYZus{}l = np.linspace(0.25,0.65,100)}
+         \PY{n}{prop\PYZus{}Xylem\PYZus{}l} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.56}\PY{p}{,}\PY{p}{]}
+         \PY{n}{PAR\PYZus{}l} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{800}\PY{p}{,}\PY{l+m+mi}{1000}\PY{p}{,}\PY{l+m+mi}{100}\PY{p}{)}
+         \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
 \end{Verbatim}
+
+    \subsubsection{Reads the inputs (relative humidity, air temperature,
+pressure, windspeed)}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{prop\PYZus{}exc} \PY{o}{=} \PY{l+m+mf}{0.45} 
+{\color{incolor}In [{\color{incolor}26}]:} \PY{n}{inputs} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{dpath}\PY{p}{,}\PY{l+s}{'}\PY{l+s}{inputs.csv}\PY{l+s}{'}\PY{p}{)}\PY{p}{,} \PY{n}{index\PYZus{}col} \PY{o}{=} \PY{l+m+mi}{0}\PY{p}{)}
 \end{Verbatim}
+
+    \subsubsection{Reads the \emph{observed} values of $\delta 18_{0}$}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{prop\PYZus{}Xylem} \PY{o}{=} \PY{l+m+mf}{0.56}
+{\color{incolor}In [{\color{incolor}27}]:} \PY{n}{obs} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{dpath}\PY{p}{,}\PY{l+s}{'}\PY{l+s}{observed\PYZus{}tree\PYZus{}rings.csv}\PY{l+s}{'}\PY{p}{)}\PY{p}{,} \PY{n}{index\PYZus{}col}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
 \end{Verbatim}
 
-    \subsubsection{Environmental inputs}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{airtemp} \PY{o}{=} \PY{l+m+mf}{14.2666666667}
-         \PY{n}{windspeed} \PY{o}{=} \PY{l+m+mf}{5.4}
-         \PY{n}{rh} \PY{o}{=} \PY{l+m+mf}{84.4}
-         \PY{n}{pressure} \PY{o}{=} \PY{l+m+mf}{1015.3333333333}
-         \PY{n}{gs} \PY{o}{=} \PY{l+m+mf}{0.25}
-         \PY{n}{leaf\PYZus{}width} \PY{o}{=} \PY{l+m+mf}{0.015}
-         \PY{n}{PAR} \PY{o}{=} \PY{l+m+mi}{925}
-\end{Verbatim}
-
-    \subsubsection{Energy balance calculations}
+    \subsubsection{Below the main loops (over inputs and over parameter
+space) are implemented: \emph{Do not} modify anything here}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{rs} \PY{o}{=} \PY{l+m+mf}{1.} \PY{o}{/} \PY{n}{gs}
+{\color{incolor}In [{\color{incolor}30}]:} \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+         
+         \PY{n}{l} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         
+         \PY{k}{for} \PY{n}{index} \PY{o+ow}{in} \PY{n+nb}{xrange}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{inputs}\PY{p}{)}\PY{p}{)}\PY{p}{:} 
+         
+             \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+             \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} create the iterator defining the parameter space for the model }
+             \PY{n}{parameter\PYZus{}space} \PY{o}{=} \PY{n}{product}\PY{p}{(}\PY{n}{gs\PYZus{}l}\PY{p}{,}\PY{n}{leaf\PYZus{}width\PYZus{}l}\PY{p}{,}\PY{n}{d\PYZus{}source\PYZus{}H2O\PYZus{}l}\PY{p}{,}\PY{n}{fract\PYZus{}through\PYZus{}stomata\PYZus{}l}\PY{p}{,}\PY{n}{fract\PYZus{}through\PYZus{}boundary\PYZus{}layer\PYZus{}l}\PY{p}{,}\PY{n}{eff\PYZus{}length\PYZus{}l}\PY{p}{,}\PY{n}{C\PYZus{}l}\PY{p}{,}\PY{n}{C\PYZus{}O\PYZus{}fract\PYZus{}l}\PY{p}{,}\PY{n}{Dcel\PYZus{}Dom\PYZus{}l}\PY{p}{,}\PY{n}{prop\PYZus{}exc\PYZus{}l}\PY{p}{,}\PY{n}{prop\PYZus{}Xylem\PYZus{}l}\PY{p}{,} \PY{n}{PAR\PYZus{}l}\PY{p}{)}
+         
+             \PY{n}{rh}\PY{p}{,} \PY{n}{airtemp}\PY{p}{,} \PY{n}{pressure}\PY{p}{,} \PY{n}{windspeed} \PY{o}{=} \PY{n}{inputs}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{n}{index}\PY{p}{,}\PY{p}{:}\PY{p}{]}
+         
+             \PY{n}{param\PYZus{}outputs}\PY{o}{=} \PY{p}{[}\PY{p}{]} 
+         
+             \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+             \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} start the loop over the parameter space }
+             \PY{k}{for} \PY{n}{parameters} \PY{o+ow}{in} \PY{n}{parameter\PYZus{}space}\PY{p}{:} 
+                 \PY{n}{gs}\PY{p}{,}\PY{n}{leaf\PYZus{}width}\PY{p}{,}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{p}{,}\PY{n}{fract\PYZus{}through\PYZus{}stomata}\PY{p}{,}\PY{n}{fract\PYZus{}through\PYZus{}boundary\PYZus{}layer}\PY{p}{,}\PY{n}{eff\PYZus{}length}\PY{p}{,}\PY{n}{C}\PY{p}{,}\PY{n}{C\PYZus{}O\PYZus{}fract}\PY{p}{,}\PY{n}{Dcel\PYZus{}Dom}\PY{p}{,}\PY{n}{prop\PYZus{}exc}\PY{p}{,}\PY{n}{prop\PYZus{}Xylem}\PY{p}{,} \PY{n}{PAR} \PY{o}{=} \PY{n}{parameters}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} Energy balance calculations }
+                 \PY{n}{rs} \PY{o}{=} \PY{l+m+mf}{1.} \PY{o}{/} \PY{n}{gs}
+         
+                 \PY{n}{r\PYZus{}times\PYZus{}b} \PY{o}{=} \PY{l+m+mf}{3.8} \PY{o}{*} \PY{p}{(}\PY{n}{leaf\PYZus{}width}\PY{o}{*}\PY{o}{*}\PY{l+m+mf}{0.25}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{windspeed}\PY{o}{*}\PY{o}{*}\PY{p}{(}\PY{o}{-}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{rb} \PY{o}{=} \PY{l+m+mf}{0.89} \PY{o}{*} \PY{n}{r\PYZus{}times\PYZus{}b}
+         
+                 \PY{n}{gr} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{4}\PY{o}{*}\PY{l+m+mf}{0.98}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{0.000000056703}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{l+m+mf}{29.2}\PY{p}{)}
+         
+                 \PY{n}{rBH} \PY{o}{=} \PY{l+m+mf}{1.}\PY{o}{/}\PY{p}{(}\PY{p}{(}\PY{l+m+mf}{1.}\PY{o}{/}\PY{n}{r\PYZus{}times\PYZus{}b}\PY{p}{)}\PY{o}{+}\PY{n}{gr}\PY{p}{)}
+         
+                 \PY{n}{Qtot} \PY{o}{=} \PY{p}{(}\PY{n}{PAR}\PY{o}{/}\PY{l+m+mf}{4.6}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{2}
+         
+                 \PY{n}{Qabs} \PY{o}{=} \PY{l+m+mf}{0.5} \PY{o}{*} \PY{n}{Qtot}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} Calculating \PYZdl{}\PYZbs{}epsilon\PYZdl{}}
+         
+                 \PY{n}{lesstemp} \PY{o}{=} \PY{n}{airtemp} \PY{o}{-} \PY{l+m+mf}{1.}
+         
+                 \PY{n}{estemp} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{lesstemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{lesstemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{lesstemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{100}
+         
+                 \PY{n}{lesstemp\PYZus{}K} \PY{o}{=} \PY{n}{C2K}\PY{p}{(}\PY{n}{lesstemp}\PY{p}{)}
+         
+                 \PY{n}{s} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{-}\PY{n}{estemp}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{o}{-}\PY{n}{C2K}\PY{p}{(}\PY{n}{lesstemp}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{smbar} \PY{o}{=} \PY{l+m+mf}{6.13753}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{n}{airtemp}\PY{o}{+}\PY{l+m+mf}{255.7}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)} \PY{o}{-} \PY{n}{airtemp}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PYZbs{}
+                                     \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{p}{(}\PY{n}{airtemp}\PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{exp}\PY{p}{(}\PY{n}{airtemp}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PYZbs{}
+                                                                 \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+} \PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{epsilon} \PY{o}{=} \PY{p}{(}\PY{n}{smbar}\PY{o}{*}\PY{l+m+mi}{44012}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{l+m+mf}{29.2}\PY{o}{*}\PY{p}{(}\PY{n}{pressure}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} Calculating \PYZdl{}\PYZbs{}frac\PYZob{}EA\PYZcb{}\PYZob{}EI\PYZcb{}\PYZdl{}}
+         
+                 \PY{n}{ea} \PY{o}{=} \PY{p}{(}\PY{n}{rh} \PY{o}{/} \PY{l+m+mi}{100}\PY{p}{)} \PY{o}{*} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{es} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{D} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PYZbs{}
+                                      \PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{-}\PY{n}{ea}\PY{p}{)}\PY{o}{/}\PY{n}{pressure}
+         
+                 \PY{n}{temp\PYZus{}diff} \PY{o}{=} \PY{p}{(}\PY{n}{rBH}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{n}{Qabs}\PY{o}{*}\PY{p}{(}\PY{n}{rs}\PY{o}{+}\PY{n}{rb}\PY{p}{)}\PY{p}{)}\PY{o}{-}\PY{p}{(}\PY{l+m+mi}{44012}\PY{o}{*}\PY{n}{D}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{l+m+mf}{29.2}\PY{o}{*}\PY{p}{(}\PY{n}{rs}\PY{o}{+}\PY{n}{rb}\PY{o}{+}\PY{p}{(}\PY{n}{epsilon}\PY{o}{*}\PY{n}{rBH}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{leaf\PYZus{}temp} \PY{o}{=} \PY{n}{airtemp} \PY{o}{+} \PY{n}{temp\PYZus{}diff}
+         
+                 \PY{n}{ei} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{leaf\PYZus{}temp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{leaf\PYZus{}temp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PYZbs{}
+                                     \PY{o}{/}\PY{p}{(}\PY{n}{leaf\PYZus{}temp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{leaf\PYZus{}temp\PYZus{}K} \PY{o}{=} \PY{n}{C2K}\PY{p}{(}\PY{n}{leaf\PYZus{}temp}\PY{p}{)}
+         
+                 \PY{n}{ea\PYZus{}ei} \PY{o}{=} \PY{n}{ea} \PY{o}{/} \PY{n}{ei}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} Calculating transpiration}
+         
+                 \PY{n}{transpiration} \PY{o}{=} \PY{p}{(}\PY{n}{epsilon} \PY{o}{*} \PY{n}{rBH} \PY{o}{*} \PY{n}{Qabs} \PY{o}{/} \PY{l+m+mf}{44012.} \PY{o}{+} \PY{n}{D}\PY{p}{)} \PYZbs{}
+                 \PY{o}{/} \PY{p}{(}\PY{n}{rs} \PY{o}{+} \PY{n}{rb} \PY{o}{+} \PY{n}{epsilon} \PY{o}{*} \PY{n}{rBH}\PY{p}{)}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} Craig \PYZam{} Gordon parameters }
+         
+                 \PY{n}{d\PYZus{}water\PYZus{}vapour} \PY{o}{=} \PY{n}{d\PYZus{}source\PYZus{}H2O} \PY{o}{+} \PY{o}{-}\PY{l+m+mi}{1}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{2.644}\PY{o}{-}\PY{l+m+mf}{3.206}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1000}\PY{o}{/}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PYZbs{}
+                                                     \PY{l+m+mf}{1.534}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1000000}\PY{o}{/}\PY{p}{(}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{o}{*}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{ek} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{fract\PYZus{}through\PYZus{}stomata}\PY{o}{*}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{gs}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{fract\PYZus{}through\PYZus{}boundary\PYZus{}layer}\PY{o}{*}\PY{n}{rb}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{gs}\PY{p}{)}\PY{o}{+}\PY{n}{rb}\PY{p}{)}
+         
+                 \PY{n}{e\PYZus{}star} \PY{o}{=} \PY{l+m+mf}{2.644}\PY{o}{-}\PY{l+m+mf}{3.206}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{10}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{)}\PY{o}{/}\PY{n}{leaf\PYZus{}temp\PYZus{}K}\PY{p}{)}\PY{o}{+}\PY{l+m+mf}{1.534}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{10}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{6}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{leaf\PYZus{}temp\PYZus{}K}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{dv} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{d\PYZus{}water\PYZus{}vapour}\PY{o}{/}\PY{l+m+mf}{1000.}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mf}{1000.}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mf}{1000.}
+         
+                 \PY{n}{dv} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{d\PYZus{}water\PYZus{}vapour}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
+         
+                 \PY{n}{de} \PY{o}{=} \PY{n}{ek}\PY{o}{+}\PY{n}{e\PYZus{}star}\PY{o}{+}\PY{p}{(}\PY{p}{(}\PY{n}{d\PYZus{}water\PYZus{}vapour}\PY{o}{-}\PY{n}{ek}\PY{p}{)}\PY{o}{*}\PY{n}{ea\PYZus{}ei}\PY{p}{)}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} Estimating the Peclet effect }
+         
+                 \PY{n}{D\PYZus{}Peclet} \PY{o}{=} \PY{l+m+mf}{0.000000119}\PY{o}{*}\PY{p}{(}\PY{n}{exp}\PY{p}{(}\PY{o}{-}\PY{p}{(}\PY{l+m+mi}{637}\PY{o}{/}\PY{p}{(}\PY{n}{leaf\PYZus{}temp\PYZus{}K}\PY{o}{-}\PY{l+m+mi}{137}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         
+                 \PY{n}{p\PYZus{}Peclet} \PY{o}{=} \PY{p}{(}\PY{n}{transpiration}\PY{o}{*}\PY{n}{eff\PYZus{}length}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{C}\PY{o}{*}\PY{n}{D\PYZus{}Peclet}\PY{p}{)}
+         
+                 \PY{n}{DL} \PY{o}{=} \PY{p}{(}\PY{n}{de}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{-}\PY{n}{exp}\PY{p}{(}\PY{o}{-}\PY{l+m+mi}{1}\PY{o}{*}\PY{n}{p\PYZus{}Peclet}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{p\PYZus{}Peclet}
+         
+                 \PY{n}{dL} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{DL}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} Calculating \PYZdl{}\PYZbs{}Delta\PYZdl{} cellulose and \PYZdl{}\PYZbs{}Delta\PYZdl{} leaf}
+         
+                 \PY{n}{D\PYZus{}sucrose} \PY{o}{=} \PY{n}{DL} \PY{o}{+} \PY{n}{C\PYZus{}O\PYZus{}fract}
+         
+                 \PY{n}{D\PYZus{}cellulose} \PY{o}{=} \PY{p}{(}\PY{n}{DL}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{-}\PY{p}{(}\PY{n}{prop\PYZus{}exc}\PY{o}{*}\PY{n}{prop\PYZus{}Xylem}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{n}{C\PYZus{}O\PYZus{}fract}
+         
+                 \PY{n}{D\PYZus{}leaf} \PY{o}{=} \PY{n}{D\PYZus{}cellulose} \PY{o}{-} \PY{n}{Dcel\PYZus{}Dom}
+         
+                 \PY{n}{d\PYZus{}sucrose} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{D\PYZus{}sucrose}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
+         
+                 \PY{n}{d\PYZus{}leaf} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{D\PYZus{}leaf}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
+         
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+                 \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} OUTPUT = \PYZdl{}\PYZbs{}Delta O\PYZus{}\PYZob{}18\PYZcb{}\PYZdl{} in tree-rings cellulose}
+         
+                 \PY{n}{OUTPUT} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{D\PYZus{}cellulose}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
+         
+                 \PY{n}{param\PYZus{}outputs}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{OUTPUT}\PY{p}{)}
+         
+             \PY{n}{l}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{param\PYZus{}outputs}\PY{p}{)}
+         
+         \PY{n}{l} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{l}\PY{p}{)}
 \end{Verbatim}
 
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}15}]:} 4.0
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{r\PYZus{}times\PYZus{}b} \PY{o}{=} \PY{l+m+mf}{3.8} \PY{o}{*} \PY{p}{(}\PY{n}{leaf\PYZus{}width}\PY{o}{*}\PY{o}{*}\PY{l+m+mf}{0.25}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{windspeed}\PY{o}{*}\PY{o}{*}\PY{p}{(}\PY{o}{-}\PY{l+m+mf}{0.5}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}16}]:} 0.5722812689529017
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{rb} \PY{o}{=} \PY{l+m+mf}{0.89} \PY{o}{*} \PY{n}{r\PYZus{}times\PYZus{}b}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}17}]:} 0.5093303293680825
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{gr} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{4}\PY{o}{*}\PY{l+m+mf}{0.98}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{0.000000056703}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{l+m+mf}{29.2}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}18}]:} 0.18075504491562489
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{rBH} \PY{o}{=} \PY{l+m+mf}{1.}\PY{o}{/}\PY{p}{(}\PY{p}{(}\PY{l+m+mf}{1.}\PY{o}{/}\PY{n}{r\PYZus{}times\PYZus{}b}\PY{p}{)}\PY{o}{+}\PY{n}{gr}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}19}]:} 0.5186325082604192
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}20}]:} \PY{n}{Qtot} \PY{o}{=} \PY{p}{(}\PY{n}{PAR}\PY{o}{/}\PY{l+m+mf}{4.6}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{2}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}20}]:} 402.1739130434783
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}21}]:} \PY{n}{Qabs} \PY{o}{=} \PY{l+m+mf}{0.5} \PY{o}{*} \PY{n}{Qtot}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}21}]:} 201.08695652173915
-\end{Verbatim}
-        
-    \subsubsection{Calculating $\epsilon$}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}22}]:} \PY{n}{lesstemp} \PY{o}{=} \PY{n}{airtemp} \PY{o}{-} \PY{l+m+mf}{1.}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}22}]:} 13.2666666667
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}56}]:} \PY{n}{estemp} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{lesstemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{lesstemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{lesstemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{100}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}57}]:} \PY{n}{lesstemp\PYZus{}K} \PY{o}{=} \PY{n}{C2K}\PY{p}{(}\PY{n}{lesstemp}\PY{p}{)}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}58}]:} \PY{n}{s} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{-}\PY{n}{estemp}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{o}{-}\PY{n}{C2K}\PY{p}{(}\PY{n}{lesstemp}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}58}]:} -1513.8241096132349
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}59}]:} \PY{n}{smbar} \PY{o}{=} \PY{l+m+mf}{6.13753}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{n}{airtemp}\PY{o}{+}\PY{l+m+mf}{255.7}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{l+m+mi}{2}\PY{o}{*}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)} \PY{o}{-} \PY{n}{airtemp}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PYZbs{}
-                             \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{p}{(}\PY{n}{airtemp}\PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{exp}\PY{p}{(}\PY{n}{airtemp}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PYZbs{}
-                                                         \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+} \PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}60}]:} \PY{n}{epsilon} \PY{o}{=} \PY{p}{(}\PY{n}{smbar}\PY{o}{*}\PY{l+m+mi}{44012}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{l+m+mf}{29.2}\PY{o}{*}\PY{p}{(}\PY{n}{pressure}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-    \subsubsection{Calculating $\frac{EA}{EI}$}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}28}]:} \PY{n}{ea} \PY{o}{=} \PY{p}{(}\PY{n}{rh} \PY{o}{/} \PY{l+m+mi}{100}\PY{p}{)} \PY{o}{*} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}28}]:} 13.781965981701569
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}29}]:} \PY{n}{es} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}29}]:} 16.329343580215127
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}30}]:} \PY{n}{D} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{airtemp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{airtemp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PYZbs{}
-                              \PY{o}{/}\PY{p}{(}\PY{n}{airtemp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{-}\PY{n}{ea}\PY{p}{)}\PY{o}{/}\PY{n}{pressure}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}30}]:} 0.0025089076807422602
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}31}]:} \PY{n}{temp\PYZus{}diff} \PY{o}{=} \PY{p}{(}\PY{n}{rBH}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{n}{Qabs}\PY{o}{*}\PY{p}{(}\PY{n}{rs}\PY{o}{+}\PY{n}{rb}\PY{p}{)}\PY{p}{)}\PY{o}{-}\PY{p}{(}\PY{l+m+mi}{44012}\PY{o}{*}\PY{n}{D}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{l+m+mf}{29.2}\PY{o}{*}\PY{p}{(}\PY{n}{rs}\PY{o}{+}\PY{n}{rb}\PY{o}{+}\PY{p}{(}\PY{n}{epsilon}\PY{o}{*}\PY{n}{rBH}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}31}]:} 2.6567603450679336
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}32}]:} \PY{n}{leaf\PYZus{}temp} \PY{o}{=} \PY{n}{airtemp} \PY{o}{+} \PY{n}{temp\PYZus{}diff}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}32}]:} 16.923427011767934
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}33}]:} \PY{n}{ei} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{6.13753} \PY{o}{*} \PY{n}{exp}\PY{p}{(}\PY{n}{leaf\PYZus{}temp} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{l+m+mf}{18.564} \PY{o}{-} \PY{p}{(}\PY{n}{leaf\PYZus{}temp}\PY{o}{/}\PY{l+m+mf}{254.4}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PYZbs{}
-                             \PY{o}{/}\PY{p}{(}\PY{n}{leaf\PYZus{}temp} \PY{o}{+}\PY{l+m+mf}{255.57}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}33}]:} 19.360275561858991
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}34}]:} \PY{n}{leaf\PYZus{}temp\PYZus{}K} \PY{o}{=} \PY{n}{C2K}\PY{p}{(}\PY{n}{leaf\PYZus{}temp}\PY{p}{)}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}34}]:} 290.08342701176798
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}35}]:} \PY{n}{ea\PYZus{}ei} \PY{o}{=} \PY{n}{ea} \PY{o}{/} \PY{n}{ei}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}35}]:} 0.71186827572087574
-\end{Verbatim}
-        
-    \subsubsection{Calculating transpiration}
+    \subsubsection{Normalize (subtract the average, divide by the sample
+standard deviation) the outputs}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}36}]:} \PY{n}{transpiration} \PY{o}{=} \PY{p}{(}\PY{n}{epsilon} \PY{o}{*} \PY{n}{rBH} \PY{o}{*} \PY{n}{Qabs} \PY{o}{/} \PY{l+m+mf}{44012.} \PY{o}{+} \PY{n}{D}\PY{p}{)} \PYZbs{}
-         \PY{o}{/} \PY{p}{(}\PY{n}{rs} \PY{o}{+} \PY{n}{rb} \PY{o}{+} \PY{n}{epsilon} \PY{o}{*} \PY{n}{rBH}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}31}]:} \PY{n}{mean\PYZus{}l} \PY{o}{=} \PY{n}{l}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+         
+         \PY{n}{std\PYZus{}l} \PY{o}{=} \PY{n}{l}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+         
+         \PY{n}{l\PYZus{}s} \PY{o}{=} \PY{p}{(}\PY{n}{l} \PY{o}{-} \PY{n}{mean\PYZus{}l}\PY{p}{)} \PY{o}{/} \PY{n}{std\PYZus{}l}
 \end{Verbatim}
 
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}36}]:} 0.0011702780786241177
-\end{Verbatim}
-        
-    \subsubsection{Craig / Gordon parameters}
+    \subsubsection{Creates the figures}
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}37}]:} \PY{n}{d\PYZus{}water\PYZus{}vapour} \PY{o}{=} \PY{n}{d\PYZus{}source\PYZus{}H2O} \PY{o}{+} \PY{o}{-}\PY{l+m+mi}{1}\PY{o}{*}\PY{p}{(}\PY{l+m+mf}{2.644}\PY{o}{-}\PY{l+m+mf}{3.206}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1000}\PY{o}{/}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PYZbs{}
-                                             \PY{l+m+mf}{1.534}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1000000}\PY{o}{/}\PY{p}{(}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{o}{*}\PY{n}{C2K}\PY{p}{(}\PY{n}{airtemp}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}36}]:} \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+         \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} raw modelled values (possibly P-dimensional)}
+         \PY{n}{f}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
+         \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{inputs}\PY{o}{.}\PY{n}{index}\PY{p}{,} \PY{n}{l}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{r}\PY{l+s}{'}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mf}{1.5}\PY{p}{)}
+         \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s}{'}\PY{l+s}{Raw data}\PY{l+s}{'}\PY{p}{)}
+         \PY{n}{f}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{fpath}\PY{p}{,}\PY{l+s}{'}\PY{l+s}{raw\PYZus{}modelled\PYZus{}delta18O.png}\PY{l+s}{'}\PY{p}{)}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{tight}\PY{l+s}{'}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{200}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{n}{f}\PY{p}{)}
+         
+         \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} ===========================================================================}
+         \PY{c}{\PYZsh{}\PYZsh{}\PYZsh{} normalized modelled values (possibly P-dimensional) and observed values }
+         \PY{n}{f}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,}\PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
+         \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{inputs}\PY{o}{.}\PY{n}{index}\PY{p}{,} \PY{n}{l\PYZus{}s}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{coral}\PY{l+s}{'}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mf}{1.5}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{model}\PY{l+s}{'}\PY{p}{)}
+         \PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{obs}\PY{o}{.}\PY{n}{index}\PY{p}{,} \PY{n}{obs}\PY{p}{[}\PY{l+s}{'}\PY{l+s}{av}\PY{l+s}{'}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{steelblue}\PY{l+s}{'}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{observations}\PY{l+s}{'}\PY{p}{)}
+         \PY{n}{ax}\PY{o}{.}\PY{n}{errorbar}\PY{p}{(}\PY{n}{obs}\PY{o}{.}\PY{n}{index}\PY{p}{,} \PY{n}{obs}\PY{p}{[}\PY{l+s}{'}\PY{l+s}{av}\PY{l+s}{'}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{yerr}\PY{o}{=}\PY{n}{obs}\PY{p}{[}\PY{l+s}{'}\PY{l+s}{std}\PY{l+s}{'}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{fmt}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{o}\PY{l+s}{'}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{steelblue}\PY{l+s}{'}\PY{p}{)}
+         \PY{c}{\PYZsh{}ax.legend(loc=0)}
+         \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s}{'}\PY{l+s}{normalized data:}\PY{l+s+se}{\PYZbs{}n}\PY{l+s}{ modelled and observed \PYZdl{}}\PY{l+s}{\PYZbs{}}\PY{l+s}{delta O\PYZus{}\PYZob{}18\PYZcb{}\PYZdl{}}\PY{l+s}{'}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{14}\PY{p}{)}
+         \PY{c}{\PYZsh{}ax.text(2006,2.5,'R=\PYZpc{}4.2f' \PYZpc{} (np.corrcoef(l\PYZus{}s.flatten(),obs['av'].values)[0,1]))}
+         \PY{n}{f}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{fpath}\PY{p}{,}\PY{l+s}{'}\PY{l+s}{normalized\PYZus{}modelled\PYZus{}delta18O.png}\PY{l+s}{'}\PY{p}{)}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s}{'}\PY{l+s}{tight}\PY{l+s}{'}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{200}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}37}]:} -15.228112002230901
-\end{Verbatim}
-        
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{forward_model_explicit_files/forward_model_explicit_21_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}38}]:} \PY{n}{ek} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{fract\PYZus{}through\PYZus{}stomata}\PY{o}{*}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{gs}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{fract\PYZus{}through\PYZus{}boundary\PYZus{}layer}\PY{o}{*}\PY{n}{rb}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{gs}\PY{p}{)}\PY{o}{+}\PY{n}{rb}\PY{p}{)}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}39}]:} \PY{n}{e\PYZus{}star} \PY{o}{=} \PY{l+m+mf}{2.644}\PY{o}{-}\PY{l+m+mf}{3.206}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{10}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{3}\PY{p}{)}\PY{o}{/}\PY{n}{leaf\PYZus{}temp\PYZus{}K}\PY{p}{)}\PY{o}{+}\PY{l+m+mf}{1.534}\PY{o}{*}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{10}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{6}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{leaf\PYZus{}temp\PYZus{}K}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}40}]:} \PY{n}{dv} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{d\PYZus{}water\PYZus{}vapour}\PY{o}{/}\PY{l+m+mf}{1000.}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mf}{1000.}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mf}{1000.}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}41}]:} \PY{n}{dv} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{d\PYZus{}water\PYZus{}vapour}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}42}]:} \PY{n}{de} \PY{o}{=} \PY{n}{ek}\PY{o}{+}\PY{n}{e\PYZus{}star}\PY{o}{+}\PY{p}{(}\PY{p}{(}\PY{n}{d\PYZus{}water\PYZus{}vapour}\PY{o}{-}\PY{n}{ek}\PY{p}{)}\PY{o}{*}\PY{n}{ea\PYZus{}ei}\PY{p}{)}
-\end{Verbatim}
-
-    \subsubsection{Estimating the Peclet effect}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}43}]:} \PY{n}{C} \PY{o}{=} \PY{l+m+mf}{55.5}\PY{o}{*}\PY{l+m+mi}{1000} \PY{c}{\PYZsh{}\PYZsh{} ????? }
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}44}]:} \PY{n}{D\PYZus{}Peclet} \PY{o}{=} \PY{l+m+mf}{0.000000119}\PY{o}{*}\PY{p}{(}\PY{n}{exp}\PY{p}{(}\PY{o}{-}\PY{p}{(}\PY{l+m+mi}{637}\PY{o}{/}\PY{p}{(}\PY{n}{leaf\PYZus{}temp\PYZus{}K}\PY{o}{-}\PY{l+m+mi}{137}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}45}]:} \PY{n}{p\PYZus{}Peclet} \PY{o}{=} \PY{p}{(}\PY{n}{transpiration}\PY{o}{*}\PY{n}{eff\PYZus{}length}\PY{p}{)}\PY{o}{/}\PY{p}{(}\PY{n}{C}\PY{o}{*}\PY{n}{D\PYZus{}Peclet}\PY{p}{)}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}46}]:} \PY{n}{DL} \PY{o}{=} \PY{p}{(}\PY{n}{de}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{-}\PY{n}{exp}\PY{p}{(}\PY{o}{-}\PY{l+m+mi}{1}\PY{o}{*}\PY{n}{p\PYZus{}Peclet}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{/}\PY{n}{p\PYZus{}Peclet}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}47}]:} \PY{n}{dL} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{DL}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
-\end{Verbatim}
-
-    \subsubsection{Calculating $\Delta$ cellulose and $\Delta$ leaf}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}48}]:} \PY{n}{D\PYZus{}sucrose} \PY{o}{=} \PY{n}{DL} \PY{o}{+} \PY{n}{C\PYZus{}O\PYZus{}fract}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}49}]:} \PY{n}{D\PYZus{}cellulose} \PY{o}{=} \PY{p}{(}\PY{n}{DL}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{-}\PY{p}{(}\PY{n}{prop\PYZus{}exc}\PY{o}{*}\PY{n}{prop\PYZus{}Xylem}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{n}{C\PYZus{}O\PYZus{}fract}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}50}]:} \PY{n}{D\PYZus{}leaf} \PY{o}{=} \PY{n}{D\PYZus{}cellulose} \PY{o}{-} \PY{n}{Dcel\PYZus{}Dom}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}51}]:} \PY{n}{d\PYZus{}sucrose} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{D\PYZus{}sucrose}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}52}]:} \PY{n}{d\PYZus{}leaf} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{D\PYZus{}leaf}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
-\end{Verbatim}
-
-    \subsubsection{OUTPUT = $\Delta O_{18}$ in tree-rings cellulose}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}53}]:} \PY{n}{OUTPUT} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{D\PYZus{}cellulose}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{+}\PY{p}{(}\PY{n}{d\PYZus{}source\PYZus{}H2O}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{l+m+mi}{1000}
-\end{Verbatim}
-
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}54}]:} \PY{n}{OUTPUT}
-\end{Verbatim}
-
-            \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}54}]:} 27.441235386168799
-\end{Verbatim}
-        
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}54}]:} 
+{\color{incolor}In [{\color{incolor}}]:} 
 \end{Verbatim}
 
 
