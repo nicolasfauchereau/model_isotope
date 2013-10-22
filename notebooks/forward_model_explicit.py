@@ -69,8 +69,8 @@ def C2K(T):
 
 ### ===========================================================================
 ### define the parameter space here 
-#gs_l = [0.25,]
-gs_l = np.linspace(0.069,0.35,100)
+gs_l = [0.25,]
+#gs_l = np.linspace(0.069,0.35,100)
 leaf_width_l= [0.015,]
 d_source_H2O_l = [-5.17,]
 fract_through_stomata_l = [32,]
@@ -116,6 +116,16 @@ obs['raw'] = (obs['av']*1.73) + 31.82
 
 # <markdowncell>
 
+# ### Define the parameter space here
+
+# <codecell>
+
+parameter_space = product(gs_l,leaf_width_l,d_source_H2O_l,fract_through_stomata_l,fract_through_boundary_layer_l,eff_length_l,C_l,C_O_fract_l,Dcel_Dom_l,prop_exc_l,prop_Xylem_l, PAR_l)
+
+parameter_space = list(parameter_space)
+
+# <markdowncell>
+
 # ### Below the main loops (over inputs and over parameter space) are implemented: *Do not* modify anything here
 
 # <codecell>
@@ -127,9 +137,7 @@ l = []
 for index in xrange(len(inputs)): 
 
     ### ===========================================================================
-    ### create the iterator defining the parameter space for the model 
-    parameter_space = product(gs_l,leaf_width_l,d_source_H2O_l,fract_through_stomata_l,fract_through_boundary_layer_l,eff_length_l,C_l,C_O_fract_l,Dcel_Dom_l,prop_exc_l,prop_Xylem_l, PAR_l)
-
+    ### loops over the inputs 
     rh, airtemp, pressure, windspeed = inputs.irow(index)
 
     param_outputs= [] 
@@ -293,9 +301,7 @@ minRMSE = np.argmin(RMSE)
 
 # <codecell>
 
-parameter_space = product(gs_l,leaf_width_l,d_source_H2O_l,fract_through_stomata_l,fract_through_boundary_layer_l,eff_length_l,C_l,C_O_fract_l,Dcel_Dom_l,prop_exc_l,prop_Xylem_l, PAR_l)
-
-parameter_space = np.array(list(parameter_space))
+parameter_space = np.array(parameter_space)
 
 optimal_params_R = parameter_space[maxR]
 optimal_params_RMSE = parameter_space[minRMSE]
@@ -355,7 +361,6 @@ print(results)
 f, ax = plt.subplots(figsize=(12,8))
 #ax.plot(inputs.index, l, color='coral', lw=1.5, zorder=2)
 ax.fill_between(inputs.index, l.min(1),l.max(1), color='coral', lw=1.5, zorder=2)
-
 ax.plot(inputs.index, l[:,minRMSE], color='k', lw=3, label='best model (RMSE)')
 ax.plot(inputs.index, l[:,maxR], color='g', lw=3, label='best model (R)')
 ax.plot(obs.index, obs['raw'].values, color='steelblue', lw=2, label='observations')
@@ -378,6 +383,7 @@ ax.errorbar(obs.index, obs['av'].values, yerr=obs['std'].values, fmt='o', color=
 ax.legend(loc=0)
 ax.set_title('normalized data:\n modelled and observed $\delta O_{18}$', fontsize=14)
 #ax.text(2006,2.5,'R=%4.2f' % (np.corrcoef(l_s.flatten(),obs['av'].values)[0,1]))
+ax.grid('on')
 f.savefig(os.path.join(fpath,'normalized_modelled_delta18O.png'), bbox_inches='tight', dpi=200)
 plt.show()
 
