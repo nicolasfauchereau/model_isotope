@@ -1,6 +1,6 @@
 # Forward eco-physiological modelling of delta 18O in Kauri tree-rings 
 
-This [IPython](www.ipython.org) notebook accompanies the paper:  
+This repository contains the supplementary material accompanying the paper:   
     
 **Stable oxygen isotope signatures of early season wood in Agathis Australis (*Kauri*) tree-ring earlywood: Preliminary results and prospects for palaeoclimate reconstructions**
 
@@ -8,13 +8,15 @@ By *Andrew M. Lorrey, Tom H. Brookman, Michael N. Evans, Nicolas C. Fauchereau, 
 
 Submitted to *Journal of Geophysical Research - Biogeosciences*, December 2013.
 
+It basically consists into an [IPython](www.ipython.org) notebook and a couple of csv files containing environmental parameters (Relative Humidity, Air Temperature, Atmospheric Pressure, Wind speed) as well as *observed* (derived by isotopic techniques) delta 18O values for Kauri (Agathis Australis) tree-rings. 
+
 ---
 
 ## Installation instructions 
 
 To read and run this IPython notebook, you need: 
 
-+ Python, available at [www.pythopn.org]()
++ Python, available at [www.python.org]()
 
 and the following libraries 
 
