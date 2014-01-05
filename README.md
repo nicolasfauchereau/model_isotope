@@ -1,4 +1,4 @@
-# Forward eco-physiological modelling of delta 18O in Kauri tree-rings 
+# Forward eco-physiological modeling of delta 18O in Kauri tree-rings 
 
 This repository contains the supplementary material accompanying the paper:   
     
@@ -55,7 +55,7 @@ The archive for the paper's supplementary material, available on github, is orga
 
 + **notebooks**: Contains the IPython notebook itself, named *forward_model_explicit.ipynb* 
 + **figures**: is where the figures are saved
-+ **data**: should contain two csv files 
++ **excel**: should contain two csv files 
     1. *inputs.csv* are observed or estimated *environmental parameters* for the model, i.e. annual: 
      - Relative Humidity (%)
      - Air Temperature (degrees Celsius)
