@@ -8,7 +8,7 @@ By *Andrew M. Lorrey, Tom H. Brookman, Michael N. Evans, Nicolas C. Fauchereau, 
 
 Submitted to *Journal of Geophysical Research - Biogeosciences*, December 2013.
 
-It basically consists into an [IPython](www.ipython.org) notebook and a couple of csv files containing environmental parameters (Relative Humidity, Air Temperature, Atmospheric Pressure, Wind speed) as well as *observed* (derived by isotopic techniques) delta 18O values for Kauri (Agathis Australis) tree-rings. 
+It basically consists of an [IPython](www.ipython.org) notebook and a couple of csv files containing environmental parameters (Relative Humidity, Air Temperature, Atmospheric Pressure, Wind speed) as well as *observed* (derived by isotopic techniques) delta 18O values for Kauri (Agathis Australis) tree-rings. 
 
 ---
 
@@ -62,13 +62,13 @@ The archive for the paper's supplementary material, available on github, is orga
      - Pressure (hPa)
      - wind speed (m/s)
 
-Please follow the template provided in the csv files for the naming of the columns 
-
     2. *observed_tree_rings.csv* contains the annual *observed* Delta O18 values for Kauri tree-rings, it contains 2 columns: 
      - 'av': annual averages
      - 'std': annual standard deviation 
+
+Please follow the template provided in the csv files for the naming of the columns 
                 
-After unpacking the archive, cd to the notebook directory and run 
+After unpacking the archive, cd into the *notebooks* directory and run:
 
     >> ipython notebook 
 
@@ -76,8 +76,11 @@ You should then be able to run the model, we recommend you run it sequentially, 
 
 ---
 
-For all questions please contact me at: 
+For all questions regarding the code itself or the installation of the required libraries, please contact Dr. Nicolas Fauchereau at: 
 
-Nicolas.Fauchereau@gmail.com
-or 
-Nicolas.Fauchereau@niwa.co.nz
++ Nicolas.Fauchereau@gmail.com
++ Nicolas.Fauchereau@niwa.co.nz
+
+For all questions regarding the model, data and methodology, please contact Dr. Andrew Lorrey at: 
+
++ Andrew.Lorrey@niwa.co.nz
