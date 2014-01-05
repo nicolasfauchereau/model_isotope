@@ -53,15 +53,16 @@ If all of the above imports smoothly, you should be able to run the notebook pro
 
 The archive for the paper's supplementary material, available on github, is organized into 3 directories: 
 
-+ **notebooks**: Contains the IPython notebook itself, named *forward_model_explicit.ipynb* 
++ **notebooks**: Contains the IPython notebook itself, named *forward_model_explicit.ipynb*
 + **figures**: is where the figures are saved
-+ **excel**: should contain two csv files 
++ **excel**: should contain two csv files
     1. *inputs.csv* are observed or estimated *environmental parameters* for the model, i.e. annual: 
      - Relative Humidity (%)
      - Air Temperature (degrees Celsius)
      - Pressure (hPa)
      - wind speed (m/s)
-    Please follow the template provided in the csv files for the naming of the columns 
+
+Please follow the template provided in the csv files for the naming of the columns 
 
     2. *observed_tree_rings.csv* contains the annual *observed* Delta O18 values for Kauri tree-rings, it contains 2 columns: 
      - 'av': annual averages
