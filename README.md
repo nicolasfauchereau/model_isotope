@@ -28,20 +28,20 @@ All of these are freely available at the link provided and are generally availab
 
 However, we recommend using one of the excellent free, platform independent Scientific Python distributions, such as 
 
-    + Anaconda, from Continuum Analytics: [https://store.continuum.io/cshop/anaconda/](https://store.continuum.io/cshop/anaconda/)
-    + Canopy express, from Enthought: [https://www.enthought.com/downloads/](https://www.enthought.com/downloads/)
-    + pyzo: [http://www.pyzo.org/](http://www.pyzo.org/)
++ Anaconda, from Continuum Analytics: [https://store.continuum.io/cshop/anaconda/](https://store.continuum.io/cshop/anaconda/)
++ Canopy express, from Enthought: [https://www.enthought.com/downloads/](https://www.enthought.com/downloads/)
++ pyzo: [http://www.pyzo.org/](http://www.pyzo.org/)
     
 Once you have installed one of these, please test the installation by running (the chevrons indicate a terminal emulator)
 
->> ipython notebook 
+    >> ipython notebook 
 
 This should open the IPython notebook dashboard. Choose "New Notebook" and in the input cell, try importing the above libraries: 
 
-import numpy
-import scipy 
-import pandas
-import matplotlib 
+    import numpy
+    import scipy 
+    import pandas
+    import matplotlib 
 
 If all of the above imports smoothly, you should be able to run the notebook provided as supplementary material to our paper.
 
@@ -67,7 +67,7 @@ The archive for the paper's supplementary material, available on github, is orga
                 
 After unpacking the archive, cd to the notebook directory and run 
 
->> ipython notebook 
+    >> ipython notebook 
 
 You should then be able to run the model, we recommend you run it sequentially, cell by cell, using the '|>' button in the notebook's toolbar
 
