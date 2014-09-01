@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Model isotope by nicolasfauchereau</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Model isotope</h1>
+        <h2>Supplementary material for the paper: Stable oxygen isotope signatures of early season wood in Agathis Australis (*Kauri*) tree-ring earlywood: Preliminary results and prospects for palaeoclimate reconstructions. Lorrey at al. 2014, submitted to JGR: Biogeosciences</h2>
+        <a href="https://github.com/nicolasfauchereau/model_isotope" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="forward-eco-physiological-modeling-of-delta-18o-in-kauri-tree-rings" class="anchor" href="#forward-eco-physiological-modeling-of-delta-18o-in-kauri-tree-rings"><span class="octicon octicon-link"></span></a>Forward eco-physiological modeling of delta 18O in Kauri tree-rings</h1>
+
+<p>This repository contains the supplementary material accompanying the paper:   </p>
+
+<p><strong>Stable oxygen isotope signatures of early season wood in Agathis Australis (<em>Kauri</em>) tree-ring earlywood: Preliminary results and prospects for palaeoclimate reconstructions</strong></p>
+
+<p>By <em>Andrew M. Lorrey, Tom H. Brookman, Michael N. Evans, Nicolas C. Fauchereau, Alison Criscitiello, Greg Eisheid, Anthony M. Fowler, Travis Horton and Daniel P. Schrag</em></p>
+
+<p>Submitted to <em>Journal of Geophysical Research - Biogeosciences</em>, December 2013.</p>
+
+<p>It basically consists of an <a href="www.ipython.org">IPython</a> notebook and a couple of csv files containing environmental parameters (Relative Humidity, Air Temperature, Atmospheric Pressure, Wind speed) as well as <em>observed</em> (derived by isotopic techniques) delta 18O values for Kauri (Agathis Australis) tree-rings. </p>
+
+<hr><h2>
+<a name="installation-instructions" class="anchor" href="#installation-instructions"><span class="octicon octicon-link"></span></a>Installation instructions</h2>
+
+<p>To read and run this IPython notebook, you need: </p>
+
+<ul>
+<li>Python, available at <a href="">www.python.org</a>
+</li>
+</ul><p>and the following libraries </p>
+
+<ul>
+<li><a href="http://ipython.org/">IPython</a></li>
+<li><a href="http://www.numpy.org/">Numpy</a></li>
+<li><a href="http://www.scipy.org/">Scipy</a></li>
+<li><a href="http://pandas.pydata.org/">Pandas</a></li>
+<li><a href="http://matplotlib.org/">Matplotlib</a></li>
+</ul><p>All of these are freely available at the link provided and are generally available through the package manager of any modern Linux distribution.</p>
+
+<p>However, we recommend using one of the excellent free, platform independent Scientific Python distributions, such as </p>
+
+<ul>
+<li>Anaconda, from Continuum Analytics: <a href="https://store.continuum.io/cshop/anaconda/">https://store.continuum.io/cshop/anaconda/</a>
+</li>
+<li>Canopy express, from Enthought: <a href="https://www.enthought.com/downloads/">https://www.enthought.com/downloads/</a>
+</li>
+<li>pyzo: <a href="http://www.pyzo.org/">http://www.pyzo.org/</a>
+</li>
+</ul><p>Once you have installed one of these, please test the installation by running (the chevrons indicate a terminal emulator)</p>
+
+<pre><code>&gt;&gt; ipython notebook 
+</code></pre>
+
+<p>This should open the IPython notebook dashboard. Choose "New Notebook" and in the input cell, try importing the above libraries: </p>
+
+<pre><code>import numpy
+import scipy 
+import pandas
+import matplotlib 
+</code></pre>
+
+<p>If all of the above imports smoothly, you should be able to run the notebook provided as supplementary material to our paper.</p>
+
+<hr><h2>
+<a name="running-instructions" class="anchor" href="#running-instructions"><span class="octicon octicon-link"></span></a>Running instructions</h2>
+
+<p>The archive for the paper's supplementary material, available on github, is organized into 3 directories: </p>
+
+<ul>
+<li>
+<strong>notebooks</strong>: Contains the IPython notebook itself, named <em>forward_model_explicit.ipynb</em>
+</li>
+<li>
+<strong>figures</strong>: is where the figures are saved</li>
+<li>
+<p><strong>excel</strong>: should contain two csv files</p>
+
+<ol>
+<li>
+<p><em>inputs.csv</em> are observed or estimated <em>environmental parameters</em> for the model, i.e. annual: </p>
+
+<ul>
+<li>Relative Humidity (%)</li>
+<li>Air Temperature (degrees Celsius)</li>
+<li>Pressure (hPa)</li>
+<li>wind speed (m/s)</li>
+</ul>
+</li>
+<li>
+<p><em>observed_tree_rings.csv</em> contains the annual <em>observed</em> Delta O18 values for Kauri tree-rings, it contains 2 columns: </p>
+
+<ul>
+<li>'av': annual averages</li>
+<li>'std': annual standard deviation </li>
+</ul>
+</li>
+</ol>
+</li>
+</ul><p>Please follow the template provided in the csv files for the naming of the columns </p>
+
+<p>After unpacking the archive, cd into the <em>notebooks</em> directory and run:</p>
+
+<pre><code>&gt;&gt; ipython notebook 
+</code></pre>
+
+<p>You should then be able to run the model, we recommend you run it sequentially, cell by cell, using the '|&gt;' button in the notebook's toolbar</p>
+
+<hr><p>For all questions regarding the code itself or the installation of the required libraries, please contact Dr. Nicolas Fauchereau at: </p>
+
+<ul>
+<li><a href="mailto:Nicolas.Fauchereau@gmail.com">Nicolas.Fauchereau@gmail.com</a></li>
+<li><a href="mailto:Nicolas.Fauchereau@niwa.co.nz">Nicolas.Fauchereau@niwa.co.nz</a></li>
+</ul><p>For all questions regarding the model, data and methodology, please contact Dr. Andrew Lorrey at: </p>
+
+<ul>
+<li><a href="mailto:Andrew.Lorrey@niwa.co.nz">Andrew.Lorrey@niwa.co.nz</a></li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/nicolasfauchereau/model_isotope/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/nicolasfauchereau/model_isotope/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/nicolasfauchereau/model_isotope"></a> is maintained by <a href="https://github.com/nicolasfauchereau">nicolasfauchereau</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
