@@ -6,9 +6,11 @@ This repository contains the supplementary material accompanying the paper:
 
 By *Andrew M. Lorrey, Tom H. Brookman, Michael N. Evans, Nicolas C. Fauchereau, Alison Criscitiello, Greg Eisheid, Anthony M. Fowler, Travis Horton and Daniel P. Schrag*
 
-Submitted to *Journal of Geophysical Research - Biogeosciences*, December 2013.
+To be submitted to *Journal of Geophysical Research - Atmosphere*, 2014.
 
 It basically consists of an [IPython](www.ipython.org) notebook and a couple of csv files containing environmental parameters (Relative Humidity, Air Temperature, Atmospheric Pressure, Wind speed) as well as *observed* (derived by isotopic techniques) delta 18O values for Kauri (Agathis Australis) tree-rings.
+
+The static HTML-rendered version of the notebook can be viewed [here](http://htmlpreview.github.io/?https://github.com/nicolasfauchereau/model_isotope/blob/master/notebooks/forward_model_explicit.html)
 
 ---
 
