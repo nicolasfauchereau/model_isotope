@@ -20,6 +20,8 @@ See diagram below, which depicts a flow chart related to Figure 3 in the manuscr
 
 <img src='https://raw.githubusercontent.com/nicolasfauchereau/model_isotope/master/figures/Lorreyetal2015SF.jpg' width=800>
 
+IPython notebooks are now rendered as HTML on github, follow [this link](https://github.com/nicolasfauchereau/model_isotope/blob/master/notebooks/forward_model_explicit_widgetsop.ipynb) for a static version.
+
 ---
 
 ## Installation instructions
