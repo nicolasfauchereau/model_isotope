@@ -1,16 +1,24 @@
-# Forward eco-physiological modeling of delta 18O in Kauri tree-rings
+# Mechanistic modeling of delta 18O in Kauri tree-rings
 
 This repository contains the supplementary material accompanying the paper:
 
-**Stable oxygen isotope signatures of early season wood in Agathis Australis (*Kauri*) tree-ring earlywood: Preliminary results and prospects for palaeoclimate reconstructions**
+**Stable oxygen isotope signatures of early season wood in Agathis Australis (*Kauri*) tree-ring earlywood: Prospects for palaeoclimate reconstructions**
 
-By *Andrew M. Lorrey, Tom H. Brookman, Michael N. Evans, Nicolas C. Fauchereau, Alison Criscitiello, Greg Eisheid, Anthony M. Fowler, Travis Horton and Daniel P. Schrag*
+By *Andrew M. Lorrey, Tom H. Brookman, Michael N. Evans, Nicolas C. Fauchereau, Margaret Barbour, Cate Macinnis-Ng, Alison Criscitiello, Greg Eisheid, Anthony M. Fowler, Travis Horton and Daniel P. Schrag*
 
-To be submitted to *Journal of Geophysical Research - Atmosphere*, 2014.
+Submitted to *Journal of Geophysical Research - Atmosphere*, 2015.
 
 It basically consists of an [IPython](www.ipython.org) notebook and a couple of csv files containing environmental parameters (Relative Humidity, Air Temperature, Atmospheric Pressure, Wind speed) as well as *observed* (derived by isotopic techniques) delta 18O values for Kauri (Agathis Australis) tree-rings.
 
-The static HTML-rendered version of the notebook can be viewed [here](http://htmlpreview.github.io/?https://github.com/nicolasfauchereau/model_isotope/blob/master/notebooks/forward_model_explicit.html)
+The code for this model originates from an Excel file provided by Dr. Margaret Barbour, and follows the BFRE04 model, augmented with a leaf energy balance model
+
+All code and data is available on github at:
+
+[https://github.com/nicolasfauchereau/model_isotope](https://github.com/nicolasfauchereau/model_isotope)
+
+See diagram below, which depicts a flow chart related to Figure 3 in the manuscript. The calculations associated with each major part of the flow chart are found in Supplementary Workbook 1.
+
+<img src='https://raw.githubusercontent.com/nicolasfauchereau/model_isotope/master/figures/Lorreyetal2015SF.jpg' width=800>
 
 ---
 
